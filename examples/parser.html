@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <title>DatePicker - ranges example</title>
+    <meta name="author" content="Buti">
+    <link rel="stylesheet" href="../css/datepicker.css">
+    <link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+    <a href="https://github.com/nobuti/datepicker"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+
+    <h1>DatePicker with external parser with format capabilities</h1>
+
+    <p class="large">A refreshing JavaScript Datepicker — lightweight, no dependencies, modular CSS.</p>
+
+    <div>
+        <h2>Single field</h2>
+       <input type="text" id="datepicker" value="12 March 2015">
+    </div>
+
+    <div>
+        <h2>Range</h2>
+        From <input type="text" id="start"> to <input type="text" id="end" value="13-06-2015">
+    </div>
+
+    <h2>What is this?</h2>
+
+    <p>It's kind of fork of <a href="https://github.com/dbushell/Pikaday">Pikaday</a>, a stable and battle tested date-picker, with the addition on date ranges. Feel free to use it however you like but please report any bugs or feature requests to the <a href="https://github.com/nobuti/datepicker/issues">GitHub issue tracker</a>, thanks!</p>
+
+    <script src="../dates.js"></script>
+    <script src="../datepicker.js"></script>
+    <script>
+
+    var single= new DatePicker(
+    {
+        fields: [document.getElementById('datepicker')] ,
+        firstDay: 1,
+        parser: Dates,
+        format: 'dd MMMM yyyy',
+        minDate: new Date('2000-01-01'),
+        maxDate: new Date('2020-12-31'),
+        yearRange: [2000, 2020]
+    });
+
+    var picker= new DatePicker(
+    {
+        fields: [document.getElementById('start'), document.getElementById('end')] ,
+        firstDay: 1,
+        parser: Dates,
+        format: 'dd-MM-yyyy',
+        minDate: new Date('2000-01-01'),
+        maxDate: new Date('2020-12-31'),
+        yearRange: [2000, 2020]
+    });
+
+    </script>
+</body>
+</html>
