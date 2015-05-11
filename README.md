@@ -25,7 +25,8 @@ Add the JavaScript to the end of your document:
 </script>
 ```
 
-For advanced formatting pass a parser object prior to DatePicker:  
+For advanced formatting pass a parser object prior to DatePicker. In `dates.js` you will find a lightweight one we usually use in our projects. But this is optional.
+ 
 See the examples folder for a full version.
 
 ```html
