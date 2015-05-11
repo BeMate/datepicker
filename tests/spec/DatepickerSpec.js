@@ -20,8 +20,6 @@ describe("DatePicker", function() {
   nextMonth.setMonth(nextMonth.getMonth() + 1);
 
   beforeAll(function(){
-    document.getElementById('end').value = nextMonth.getFullYear() + '-' + (nextMonth.getMonth() + 1)  + '-' + nextMonth.getDate();
-
     document.getElementById('fixture').style.display = 'block';
   });
 
@@ -90,6 +88,9 @@ describe("DatePicker", function() {
     var datepicker;
 
     beforeEach(function() {
+      document.getElementById('start').value = "";
+      document.getElementById('end').value = nextMonth.getFullYear() + '-' + (nextMonth.getMonth() + 1)  + '-' + nextMonth.getDate();
+
       datepicker= new DatePicker({
           fields: [document.getElementById('start'), document.getElementById('end')] ,
           firstDay: 1,
@@ -144,19 +145,22 @@ describe("DatePicker", function() {
       expect(document.querySelectorAll('.is-between').length).toBe(5);
     });
 
-    it("should swap the dates if start is bigger than ending", function() {
+    it("should keep the dates interval if start is bigger than ending", function() {
       var start = document.getElementById('start'),
           end = document.getElementById('end');
 
       fireEvent(end, 'focus');
-      fireEvent(document.querySelector('.pika-next'), 'mousedown');
       fireEvent(document.querySelectorAll('.pika-button')[0], 'mousedown');
 
       fireEvent(start, 'focus');
       fireEvent(document.querySelector('.pika-next'), 'mousedown');
       fireEvent(document.querySelectorAll('.pika-button')[6], 'mousedown');
 
+      // To force a repaint
+      fireEvent(end, 'focus');
+
       expect(datepicker._e > datepicker._s).toBe(true);
+      expect(document.querySelectorAll('.pika-button')[7].parentNode.className).toMatch(/is-selected/);
     });
 
     it("should not be able to select an ending date before the start date", function() {
@@ -164,6 +168,7 @@ describe("DatePicker", function() {
           end = document.getElementById('end');
 
       fireEvent(start, 'focus');
+      fireEvent(document.querySelector('.pika-next'), 'mousedown');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
       fireEvent(end, 'focus');
