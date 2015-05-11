@@ -5,6 +5,7 @@ DatePicker
 
 * Lightweight (less than 5kb minified and gzipped)
 * No dependencies (but includes a parser option to format dates results)
+* Single and range dates
 * Modular CSS classes for easy styling
 
 ## Usage
