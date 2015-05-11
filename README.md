@@ -26,7 +26,7 @@ Add the JavaScript to the end of your document:
 ```
 
 For advanced formatting pass a parser object prior to DatePicker. In `dates.js` you will find a lightweight one we usually use in our projects. But this is optional.
- 
+
 See the examples folder for a full version.
 
 ```html
@@ -40,7 +40,7 @@ See the examples folder for a full version.
         parser: Dates,
         format: 'D MMMM YYYY',
         onSelect: function() {
-            console.log(this.getMoment().format('Do MMMM YYYY'));
+            console.log(this.getDate());
         }
     });
 </script>
