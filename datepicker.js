@@ -535,6 +535,9 @@
       this._s = null;
       this._e = null;
 
+      // Interval days between start and end date
+      this._i = null;
+
       var opts = extend(this._o, options, true);
 
       opts.isRTL = !!opts.isRTL;
@@ -678,10 +681,14 @@
 
       if (this._s && this._e) {
         if (this._s.getTime() > this._e.getTime()) {
-          var tmp = this._e;
-          this._e = this._s;
-          this._s = tmp;
-          tmp = null;
+          this._e = new Date(this._s);
+          this._e.setDate(this._e.getDate() + this._i);
+        }
+
+        // If same day is selected, add one day to end date
+        if (this._s.getTime() == this._e.getTime()) {
+          this._e = new Date(this._s);
+          this._e.setDate(this._e.getDate() + 1);
         }
 
         forEach(this._o.fields, function(field){
@@ -690,6 +697,8 @@
             firedBy: self
           });
         })
+
+        this._i = Math.round(Math.abs((this._e.getTime() - this._s.getTime())/(24*60*60*1000)));
       }
 
       if (!preventOnSelect && typeof this._o.onSelect === 'function') {
