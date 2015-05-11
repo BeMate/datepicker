@@ -50,7 +50,7 @@ As the examples demonstrate above
 DatePicker has many useful options:
 
 * `fields` bind the datepicker to a form field or two
-* `position` preferred position of the datepicker relative to the form field, e.g.: `top right`, `bottom right` **Note:** automatic adjustment may occur to avoid datepicker from being displayed outside the viewport, see [positions example][] (default to 'bottom left')
+* `position` preferred position of the datepicker relative to the form field, e.g.: `top right`, `bottom right` **Note:** automatic adjustment may occur to avoid datepicker from being displayed outside the viewport, see the positions example (default to 'bottom left')
 * `reposition` can be set to false to not reposition datepicker within the viewport, forcing it to take the configured `position` (default: true)
 * `parser` to manage an output format for `.toString()` and `field` value
 * `format` the default output format for `.toString()` and `field` value (requires a parser for custom formatting)
@@ -64,7 +64,7 @@ DatePicker has many useful options:
 * `i18n` language defaults for month and weekday names (see internationalization below)
 * `yearSuffix` additional text to append to the year in the title
 * `showMonthAfterYear` render the month after year in the title (default `false`)
-* `theme` define a classname that can be used as a hook for styling different themes, see [theme example][] (default `null`)
+* `theme` define a classname that can be used as a hook for styling different themes, see the theme example (default `null`)
 * `onSelect` callback function for when a date is selected
 * `onOpen` callback function for when the picker becomes visible
 * `onClose` callback function for when the picker is hidden
@@ -84,9 +84,9 @@ var picker = new DatePicker({ fields: [document.getElementById('datepicker')] })
 
 Returns the selected date in a string format. If parser exists (recommended) then Datepicker can return any format that the parser understands, otherwise you're stuck with JavaScript's default.
 
-`picker.getDate()`
+`picker.getDate(which)`
 
-Returns a basic JavaScript `Date` object of the selected day, or `null` if no selection.
+Returns a basic JavaScript `Date` object of the selected day, or `null` if no selection. `which` param is optional (`in` and `out` are the valid values), taking the start date (`in`) if no param is present.
 
 `picker.setDate('2015-01-01')`
 
