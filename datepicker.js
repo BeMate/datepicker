@@ -967,6 +967,8 @@
       if (!field) {
         field = this._o.fields[0];
         this._f = field;
+      } else {
+        this._f = field;
       }
 
       if (!this._v) {
