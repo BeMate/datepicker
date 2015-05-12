@@ -175,6 +175,35 @@ describe("DatePicker", function() {
       expect(document.querySelectorAll('.pika-button')[0].parentNode.className).toMatch(/is-disabled/);
       expect(document.querySelectorAll('.pika-button')[1].parentNode.className).toMatch(/is-disabled/);
     });
+
+    it("should show the start date if ending date is not defined", function() {
+      var start = document.getElementById('start'),
+          end = document.getElementById('end'),
+          months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+      fireEvent(start, 'focus');
+      fireEvent(document.querySelector('.pika-next'), 'mousedown');
+      fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
+
+      fireEvent(end, 'focus');
+      expect(document.querySelectorAll('.pika-title .pika-label')[0].firstChild.textContent).toBe(months[nextMonth.getMonth()]);
+    });
+
+    it("should pass the focus to ending date when start date is set and ending date is blank", function() {
+      var start = document.getElementById('start'),
+          end = document.getElementById('end');
+
+      datepicker._f = end;
+      datepicker._w = "out";
+      datepicker.setDate();
+
+      fireEvent(start, 'focus');
+      fireEvent(document.querySelector('.pika-next'), 'mousedown');
+      fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
+
+      // Because we set the field when has focus
+      expect(datepicker._f).toEqual(end);
+    });
   });
 
   describe('Datepicker with parser', function () {
