@@ -369,13 +369,16 @@
           if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty')) {
             self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')));
 
-            sto(function() {
-              self.hide();
+            // If there is no end date yet, we don't close on click the calendar
+            if (self._e != null || !opts.multiple) {
+              sto(function() {
+                self.hide();
 
-              forEach(opts.fields, function(field){
-                field.blur();
-              })
-            }, 100);
+                forEach(opts.fields, function(field){
+                  field.blur();
+                })
+              }, 100);
+            }
 
             return;
           } else if (hasClass(target, 'pika-prev')) {
@@ -704,6 +707,16 @@
       if (!preventOnSelect && typeof this._o.onSelect === 'function') {
         this._o.onSelect.call(this, this.getDate(this._w));
       }
+
+      if (this._w === "in" && this._e == null) {
+        forEach(this._o.fields, function(field, index){
+          if (hasClass(field, 'pika-out')) {
+            fireEvent(field, 'focus');
+            setToStartOfDay(self._s);
+            self.gotoDate(self._s);
+          }
+        });
+      }
     },
 
     /**
@@ -983,7 +996,12 @@
         if (isDate(fieldDate)) {
           this.gotoDate(fieldDate);
         } else {
-          this.gotoDate(new Date());
+          // If field is pika-out we show the start date if it's present
+          if (hasClass(field, 'pika-out') && this._s != null) {
+            this.gotoDate(this._s);
+          } else {
+            this.gotoDate(new Date());
+          }
         }
 
         addEvent(document, 'click', this._onClick);
