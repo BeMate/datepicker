@@ -966,8 +966,8 @@
 
       if (!field) {
         field = this._o.fields[0];
-        this._f = field;
       }
+      this._f = field;
 
       if (!this._v) {
         removeClass(this.el, 'is-hidden');
