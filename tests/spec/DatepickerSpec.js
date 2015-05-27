@@ -81,6 +81,10 @@ describe("DatePicker", function() {
       expect(document.querySelector('.is-selected-in .pika-button').firstChild.textContent).toEqual("22");
       expect(document.querySelectorAll('.is-selected').length).toBe(1);
     });
+
+    it("should be return 0 days diff", function() {
+      expect(datepicker.getDiff()).toBe(0);
+    });
   });
 
   describe('Range datepicker', function () {
@@ -203,6 +207,37 @@ describe("DatePicker", function() {
 
       // Because we set the field when has focus
       expect(datepicker._f).toEqual(end);
+    });
+
+    it("should be return 0 days diff if any dates it's not defined yet", function() {
+      expect(datepicker.getDiff()).toBe(0);
+    });
+
+    it("should be return days diff properly when the two dates are defined", function() {
+      var start = document.getElementById('start'),
+          end = document.getElementById('end');
+
+      fireEvent(start, 'focus');
+      fireEvent(document.querySelector('.pika-next'), 'mousedown');
+      fireEvent(document.querySelectorAll('.pika-button')[0], 'mousedown');
+
+      fireEvent(end, 'focus');
+      fireEvent(document.querySelectorAll('.pika-button')[6], 'mousedown');
+
+      expect(datepicker.getDiff()).toBe(6);
+
+      fireEvent(start, 'focus');
+      fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
+
+      expect(datepicker.getDiff()).toBe(4);
+
+      fireEvent(start, 'focus');
+      fireEvent(document.querySelectorAll('.pika-button')[12], 'mousedown');
+
+      // To force a repaint for testing visually
+      fireEvent(end, 'focus');
+
+      expect(datepicker.getDiff()).toBe(4);
     });
   });
 

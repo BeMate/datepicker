@@ -719,6 +719,22 @@
       }
     },
 
+    getDiff: function() {
+      var result;
+
+      if (this._o.multiple) {
+        if (this._e && this._s) {
+          result = (this._e - this._s)/(1000*60*60*24);
+        } else {
+          result = 0
+        }
+      } else {
+        result = 0;
+      }
+
+      return result;
+    },
+
     /**
      * change view to a specific date
      */
