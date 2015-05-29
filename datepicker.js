@@ -989,6 +989,11 @@
       return this._v;
     },
 
+    setCallback: function(fn, which) {
+      which = which || 'onSelect';
+      this._o[which] = fn;
+    },
+
     show: function(field) {
 
       var fieldDate;
@@ -1027,6 +1032,10 @@
           this._o.onOpen.call(this);
         }
       }
+    },
+
+    which: function() {
+      return this._w;
     },
 
     hide: function() {

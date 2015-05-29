@@ -85,6 +85,30 @@ describe("DatePicker", function() {
     it("should be return 0 days diff", function() {
       expect(datepicker.getDiff()).toBe(0);
     });
+
+    it("should disabled dates properly", function() {
+      var node = document.getElementById('date-field');
+      var invalids = ["14-06-2015", "15-06-2015"];
+
+      var disabledDayHandler = function(day) {
+        var date = Dates.format(day, "dd-MM-yyyy");
+        var collection = invalids;
+        return collection.indexOf(date) !== -1;
+      }
+
+      datepicker.setCallback(disabledDayHandler, 'disableDayFn');
+
+      fireEvent(node, 'focus');
+
+      node.value = "2015-06-13";
+      fireEvent(node, 'change');
+
+      datepicker.hide();
+      fireEvent(node, 'focus');
+
+      expect(document.querySelectorAll('.pika-button')[13].parentNode.className).toMatch(/is-disabled/);
+      expect(document.querySelectorAll('.pika-button')[14].parentNode.className).toMatch(/is-disabled/);
+    });
   });
 
   describe('Range datepicker', function () {
@@ -238,6 +262,44 @@ describe("DatePicker", function() {
       fireEvent(end, 'focus');
 
       expect(datepicker.getDiff()).toBe(4);
+    });
+
+    it("should disabled dates properly", function() {
+      var start = document.getElementById('start'),
+          end = document.getElementById('end');
+
+      fireEvent(start, 'focus');
+      start.value = "2015-06-13";
+      fireEvent(start, 'change');
+
+      fireEvent(end, 'focus');
+      end.value = "2015-06-20";
+      fireEvent(end, 'change');
+
+      var invalids_in = ["14-06-2015", "15-06-2015"];
+      var invalids_out = ["18-06-2015", "19-06-2015"];
+
+      var disabledDayHandler = function(day) {
+        var collection = datepicker.which() === "in" ? invalids_in : invalids_out;
+        var date = Dates.format(day, "dd-MM-yyyy");
+        return collection.indexOf(date) !== -1;
+      }
+
+      datepicker.setCallback(disabledDayHandler, 'disableDayFn');
+
+      datepicker.hide();
+
+      fireEvent(start, 'focus');
+
+      expect(document.querySelectorAll('.pika-button')[13].parentNode.className).toMatch(/is-disabled/);
+      expect(document.querySelectorAll('.pika-button')[14].parentNode.className).toMatch(/is-disabled/);
+
+      fireEvent(end, 'focus');
+
+      expect(document.querySelectorAll('.pika-button')[13].parentNode.className).not.toMatch(/is-disabled/);
+      expect(document.querySelectorAll('.pika-button')[14].parentNode.className).not.toMatch(/is-disabled/);
+      expect(document.querySelectorAll('.pika-button')[17].parentNode.className).toMatch(/is-disabled/);
+      expect(document.querySelectorAll('.pika-button')[18].parentNode.className).toMatch(/is-disabled/);
     });
   });
 

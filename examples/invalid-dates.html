@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <title>DatePicker - ranges example</title>
+    <meta name="author" content="Buti">
+    <link rel="stylesheet" href="../css/datepicker.css">
+    <link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+    <a href="https://github.com/nobuti/datepicker"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+
+    <h1>DatePicker</h1>
+
+    <p class="large">A refreshing JavaScript Datepicker — lightweight, no dependencies, modular CSS.</p>
+
+    <div>
+        <h2>Single field</h2>
+       <input type="text" id="datepicker" value="2015-05-13">
+    </div>
+
+    <div>
+        <h2>Range</h2>
+        From <input type="text" id="start"> to <input type="text" id="end">
+    </div>
+
+    <h2>What is this?</h2>
+
+    <p>It's kind of fork of <a href="https://github.com/dbushell/Pikaday">Pikaday</a>, a stable and battle tested date-picker, with the addition on date ranges. Feel free to use it however you like but please report any bugs or feature requests to the <a href="https://github.com/nobuti/datepicker/issues">GitHub issue tracker</a>, thanks!</p>
+
+    <script src="../dates.js"></script>
+    <script src="../datepicker.js"></script>
+    <script>
+        var CHECKIN_NODISPO = '["03-06-2015","04-06-2015","05-06-2015","06-06-2015","17-06-2015","22-05-2015","21-05-2015","11-05-2015","14-05-2015","15-05-2015","16-05-2015","17-05-2015","18-05-2015","19-05-2015","13-10-2015","14-10-2015","15-10-2015","19-10-2015","20-10-2015","21-10-2015","22-10-2015","23-10-2015","17-08-2015","18-08-2015","19-08-2015","20-08-2015","21-08-2015","13-07-2015","14-07-2015","15-07-2015","16-07-2015","17-07-2015","29-06-2015","30-06-2015","01-07-2015","02-07-2015","03-07-2015"]';
+        var CHECKOUT_NODISPO = '["04-06-2015","05-06-2015","06-06-2015","07-06-2015","18-06-2015","23-05-2015","22-05-2015","12-05-2015","15-05-2015","16-05-2015","17-05-2015","18-05-2015","19-05-2015","20-05-2015","14-10-2015","15-10-2015","16-10-2015","20-10-2015","21-10-2015","22-10-2015","23-10-2015","24-10-2015","18-08-2015","19-08-2015","20-08-2015","21-08-2015","22-08-2015","14-07-2015","15-07-2015","16-07-2015","17-07-2015","18-07-2015","30-06-2015","01-07-2015","02-07-2015","03-07-2015","04-07-2015"]';
+
+        var disabledDaySingleHandler = function(day) {
+            var date = Dates.format(day, "dd-MM-yyyy");
+            var collection = CHECKIN_NODISPO;
+            return collection.indexOf(date) !== -1;
+        }
+
+        var disabledDayMultipleHandler = function(day) {
+            var collection = picker.which() === "in" ? CHECKIN_NODISPO : CHECKOUT_NODISPO;
+            var date = Dates.format(day, "dd-MM-yyyy");
+            return collection.indexOf(date) !== -1;
+        }
+
+        var single= new DatePicker(
+        {
+            fields: [document.getElementById('datepicker')] ,
+            firstDay: 1,
+            minDate: new Date('2000-01-01'),
+            maxDate: new Date('2020-12-31'),
+            yearRange: [2000, 2020],
+            disableDayFn: disabledDaySingleHandler
+        });
+
+        var picker= new DatePicker(
+        {
+            fields: [document.getElementById('start'), document.getElementById('end')] ,
+            firstDay: 1,
+            minDate: new Date('2000-01-01'),
+            maxDate: new Date('2020-12-31'),
+            yearRange: [2000, 2020],
+            disableDayFn: disabledDayMultipleHandler
+        });
+    </script>
+</body>
+</html>
