@@ -155,6 +155,8 @@
       // ('bottom' & 'left' keywords are not used, 'top' & 'right' are modifier on the bottom/left position)
       position: 'bottom left',
 
+      bounded: false,
+
       // automatically fit in the viewport even if it means repositioning from the position option
       reposition: true,
 
@@ -347,6 +349,25 @@
       }
     },
 
+    parents = function(node) {
+      var nodes = [node];
+      for (; node; node = node.parentNode) {
+        nodes.unshift(node);
+      }
+      return nodes;
+    },
+
+    commonAncestor = function(node1, node2) {
+      var parents1 = parents(node1);
+      var parents2 = parents(node2);
+
+      if (parents1[0] != parents2[0]) throw "No common ancestor!"
+
+      for (var i = 0; i < parents1.length; i++) {
+        if (parents1[i] != parents2[i]) return parents1[i - 1];
+      }
+    },
+
     /**
      * DatePicker constructor
      */
@@ -485,7 +506,17 @@
       addEvent(self.el, 'mousedown', self._onMouseDown, true);
       addEvent(self.el, 'change', self._onChange);
 
-      document.body.appendChild(self.el);
+      if (opts.bounded === true) {
+        var common;
+        if (opts.fields.length === 2) {
+          common = commonAncestor(opts.fields[0], opts.fields[1]);
+        } else {
+          common = opts.fields[0].parentNode;
+        }
+        common.appendChild(self.el);
+      } else {
+        document.body.appendChild(self.el);
+      }
 
       self.hasParser = (opts.parser != null);
 
@@ -878,35 +909,40 @@
         scrollTop = window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop,
         left, top, clientRect;
 
-      if (typeof field.getBoundingClientRect === 'function') {
-        clientRect = field.getBoundingClientRect();
-        left = clientRect.left + window.pageXOffset;
-        top = clientRect.bottom + window.pageYOffset;
-      } else {
+      if (this._o.bounded === true) {
         left = pEl.offsetLeft;
         top = pEl.offsetTop + pEl.offsetHeight;
-        while ((pEl = pEl.offsetParent)) {
-          left += pEl.offsetLeft;
-          top += pEl.offsetTop;
+      } else {
+        if (typeof field.getBoundingClientRect === 'function') {
+          clientRect = field.getBoundingClientRect();
+          left = clientRect.left + window.pageXOffset;
+          top = clientRect.bottom + window.pageYOffset;
+        } else {
+          left = pEl.offsetLeft;
+          top = pEl.offsetTop + pEl.offsetHeight;
+          while ((pEl = pEl.offsetParent)) {
+            left += pEl.offsetLeft;
+            top += pEl.offsetTop;
+          }
         }
-      }
 
-      // default position is bottom & left
-      if ((this._o.reposition && left + width > viewportWidth) ||
-        (
-          this._o.position.indexOf('right') > -1 &&
-          left - width + field.offsetWidth > 0
-        )
-      ) {
-        left = left - width + field.offsetWidth;
-      }
-      if ((this._o.reposition && top + height > viewportHeight + scrollTop) ||
-        (
-          this._o.position.indexOf('top') > -1 &&
-          top - height - field.offsetHeight > 0
-        )
-      ) {
-        top = top - height - field.offsetHeight;
+        // default position is bottom & left
+        if ((this._o.reposition && left + width > viewportWidth) ||
+          (
+            this._o.position.indexOf('right') > -1 &&
+            left - width + field.offsetWidth > 0
+          )
+        ) {
+          left = left - width + field.offsetWidth;
+        }
+        if ((this._o.reposition && top + height > viewportHeight + scrollTop) ||
+          (
+            this._o.position.indexOf('top') > -1 &&
+            top - height - field.offsetHeight > 0
+          )
+        ) {
+          top = top - height - field.offsetHeight;
+        }
       }
 
       this.el.style.position = 'absolute';
