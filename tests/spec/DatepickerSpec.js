@@ -33,7 +33,8 @@ describe("DatePicker", function() {
 
     beforeEach(function() {
       datepicker = new DatePicker({
-          fields: [document.getElementById('date-field')] ,
+          fields: [document.getElementById('date-field')],
+          bounded: true,
           firstDay: 1,
           minDate: new Date('2000-01-01'),
           maxDate: new Date('2020-12-31'),
@@ -50,6 +51,18 @@ describe("DatePicker", function() {
 
       expect(datepicker).not.toBeNull();
       expect(calendar).not.toBeNull();
+    });
+
+    it("should be rendered inside the common parent", function() {
+      var calendar = document.querySelector('.pika-single.is-single');
+      var field = document.getElementById('date-field');
+
+      // To open the datepicker
+      fireEvent(field, 'focus');
+
+      expect(calendar.parentNode).toBe(document.getElementById('container'));
+      expect(calendar.offsetLeft).toBe(field.offsetLeft);
+      expect(calendar.offsetTop).toBe(field.offsetTop + field.offsetHeight);
     });
 
     it("should be open in the month dicted by the field", function() {
@@ -120,7 +133,8 @@ describe("DatePicker", function() {
       document.getElementById('end').value = nextMonth.getFullYear() + '-' + (nextMonth.getMonth() + 1)  + '-' + nextMonth.getDate();
 
       datepicker= new DatePicker({
-          fields: [document.getElementById('start'), document.getElementById('end')] ,
+          fields: [document.getElementById('start'), document.getElementById('end')],
+          bounded: true,
           firstDay: 1,
           minDate: new Date('2000-01-01'),
           maxDate: new Date('2020-12-31'),
@@ -137,6 +151,24 @@ describe("DatePicker", function() {
 
       expect(datepicker).not.toBeNull();
       expect(calendar.length).toBe(1);
+    });
+
+    it("should be rendered inside the common parent", function() {
+      var calendar = document.querySelector('.pika-single.is-multiple');
+      var start = document.getElementById('start');
+      var end = document.getElementById('end');
+
+      // To open the datepicker
+      fireEvent(start, 'focus');
+
+      expect(calendar.parentNode).toBe(document.getElementById('container-range'));
+      expect(calendar.offsetLeft).toBe(start.offsetLeft);
+      expect(calendar.offsetTop).toBe(start.offsetTop + start.offsetHeight);
+
+      fireEvent(end, 'focus');
+      expect(calendar.offsetLeft).toBe(end.offsetLeft);
+      expect(calendar.offsetTop).toBe(end.offsetTop + end.offsetHeight);
+
     });
 
     it("should be open in current date if field is blank", function() {
