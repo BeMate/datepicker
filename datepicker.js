@@ -504,6 +504,7 @@
       self.el.className = 'pika-single' + (opts.isRTL ? ' is-rtl' : '') + (opts.theme ? ' ' + opts.theme : '') + (opts.multiple ? ' is-multiple' : ' is-single');
 
       addEvent(self.el, 'mousedown', self._onMouseDown, true);
+      addEvent(self.el, 'touchstart', self._onMouseDown, true);
       addEvent(self.el, 'change', self._onChange);
 
       if (opts.bounded === true) {
@@ -1098,6 +1099,7 @@
 
       this.hide();
       removeEvent(this.el, 'mousedown', this._onMouseDown, true);
+      removeEvent(this.el, 'touchstart', this._onMouseDown, true);
       removeEvent(this.el, 'change', this._onChange);
 
       forEach(this._o.fields, function(field){
