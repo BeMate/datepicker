@@ -1,7 +1,7 @@
 /*!
  * DatePicker
  *
- * Copyright © 2015 Buti | BSD & MIT license | https://github.com/nobuti/datepicker
+ * Copyright © 2015 Buti | BSD & MIT license | https://github.com/BeMate/datepicker
  */
 
 (function(root, factory) {
@@ -149,7 +149,7 @@
     defaults = {
 
       // bind the picker to a form field
-      fields: [],
+      dataFields: [],
 
       // position of the datepicker, relative to the field (default to bottom & left)
       // ('bottom' & 'left' keywords are not used, 'top' & 'right' are modifier on the bottom/left position)
@@ -162,6 +162,9 @@
 
       // the default output format for `.toString()` and `field` value
       format: 'dd/MM/yyyy',
+
+      // the default data format `field` value
+      dataFormat: 'yyyy/MM/dd',
 
       // option for a parser object
       // this object must to respond to:
@@ -434,7 +437,6 @@
       };
 
       self._onInputChange = function(e) {
-
         var date, field;
         field = e.target;
 
@@ -577,19 +579,16 @@
 
       opts.isRTL = !!opts.isRTL;
 
-      if (!isArray(opts.fields) || opts.fields.length === 0) {
+      if (!isArray(opts.dataFields) || opts.dataFields.length === 0) {
         throw "You must include one or two fields as options";
       }
 
       // Multiple fields aka range
-      opts.multiple = opts.fields.length > 1;
+      opts.multiple = opts.dataFields.length > 1;
 
       this._p = opts.parser;
 
-      forEach(opts.fields, function(field, index){
-        addClass(field, 'pika-trigger');
-        addClass(field, 'pika-' + (index === 0 ? 'in' : 'out'));
-      });
+      this.createFields(opts, opts.dataFields);
 
       opts.theme = (typeof opts.theme) == 'string' && opts.theme ? opts.theme : null;
 
@@ -629,6 +628,32 @@
       return opts;
     },
 
+    createFields: function(opts, fields) {
+
+      opts.fields = [];
+
+      forEach(fields, function(field, index){
+        field.setAttribute('type', 'hidden');
+
+        var input = document.createElement("input");
+        input.setAttribute('type', 'text');
+        input.setAttribute('value', field.value);
+        input.setAttribute('id', "pika-" + field.id);
+        input.setAttribute('data-pika-field', field.id);
+        input.setAttribute('placeholder', field.getAttribute('placeholder'));
+        input.className = field.className;
+
+        addClass(input, 'pika-trigger');
+        addClass(input, 'pika-' + (index === 0 ? 'in' : 'out'));
+        addClass(field, 'pika-data-' + (index === 0 ? 'in' : 'out'));
+
+        field.parentNode.insertBefore(input, field.nextSibling);
+
+        opts.fields.push(input);
+
+      });
+    },
+
     /**
      * return a formatted string of the current selection (using the formatter function if available)
      */
@@ -638,7 +663,8 @@
       if (field) {
         date = hasClass(field, 'pika-in') ? this._s : this._e;
       }
-      return !isDate(date) ? '' : this.hasParser ? this._p.format(date, format || this._o.format) : date.toDateString();
+      return !isDate(date) ? '' :
+             this.hasParser ? this._p.format(date, format) : date.toDateString();
     },
 
     /**
@@ -653,6 +679,9 @@
       return isDate(date) ? new Date(date.getTime()) : null;
     },
 
+    setValue: function(field, value) {
+      field.value = value;
+    },
     /**
      * set the current selection
      */
@@ -667,7 +696,13 @@
         }
 
         if (this._f) {
-          this._f.value = '';
+          this.setValue(this._f, '');
+
+          if (!this._f.ref) {
+            this._f.ref = document.getElementById(this._f.getAttribute('data-pika-field'));
+          }
+
+          this.setValue(this._f.ref, '');
           fireEvent(this._f, 'change', {
             firedBy: this
           });
@@ -708,7 +743,8 @@
       }
 
       if (this._f) {
-        this._f.value = this.toString(this._f);
+        this.setValue(this._f, this.toString(this._f, this._o.format));
+        this.setValue(this._f.ref, this.toString(this._f, this._o.dataFormat));
         fireEvent(this._f, 'change', {
           firedBy: this
         });
@@ -727,7 +763,12 @@
         }
 
         forEach(this._o.fields, function(field){
-          field.value = self.toString(field);
+          var ref = field.getAttribute('data-pika-field'),
+              dataField = document.getElementById(ref);
+
+          self.setValue(field, self.toString(field, self._o.format));
+          self.setValue(dataField, self.toString(field, self._o.dataFormat));
+
           fireEvent(field, 'change', {
             firedBy: self
           });
@@ -1033,12 +1074,16 @@
 
     show: function(field) {
 
-      var fieldDate;
+      var fieldDate, ref;
 
       if (!field) {
         field = this._o.fields[0];
       }
+
+      ref = field.getAttribute('data-pika-field');
+
       this._f = field;
+      this._f.ref = document.getElementById(ref);
 
       if (!this._v) {
         removeClass(this.el, 'is-hidden');
@@ -1110,6 +1155,14 @@
         removeEvent(field, 'change', self._onInputChange);
         removeEvent(field, 'click', self._onInputClick);
         removeEvent(field, 'focus', self._onInputFocus);
+
+        field.parentNode.removeChild(field);
+      })
+
+      forEach(this._o.dataFields, function(field){
+        removeClass(field, 'pika-data-in');
+        removeClass(field, 'pika-data-out');
+        field.setAttribute('type', 'text');
       })
 
       if (this.el.parentNode) {
