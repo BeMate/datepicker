@@ -33,12 +33,12 @@ describe("DatePicker", function() {
 
     beforeEach(function() {
       datepicker = new DatePicker({
-          fields: [document.getElementById('date-field')],
-          bounded: true,
-          firstDay: 1,
-          minDate: new Date('2000-01-01'),
-          maxDate: new Date('2020-12-31'),
-          yearRange: [2000, 2020]
+        dataFields: [document.getElementById('date-field')],
+        bounded: true,
+        firstDay: 1,
+        minDate: new Date('2000-01-01'),
+        maxDate: new Date('2020-12-31'),
+        yearRange: [2000, 2020]
       });
     });
 
@@ -55,8 +55,8 @@ describe("DatePicker", function() {
 
     it("should be rendered inside the common parent", function() {
       var calendar = document.querySelector('.pika-single.is-single');
-      var field = document.getElementById('date-field');
-
+      var datafield = document.getElementById('date-field');
+      var field = document.getElementById('pika-date-field');
       // To open the datepicker
       fireEvent(field, 'focus');
 
@@ -67,12 +67,14 @@ describe("DatePicker", function() {
 
     it("should be open in the month dicted by the field", function() {
       var node = document.getElementById('date-field');
+      var field = document.getElementById('pika-date-field');
 
       expect(node).not.toBeNull();
       expect(node.value).toEqual('2015-06-13');
+      expect(field.value).toEqual('2015-06-13');
 
       // To open the datepicker
-      fireEvent(node, 'focus');
+      fireEvent(field, 'focus');
 
       expect(document.querySelector('.pika-single.is-single').className).not.toMatch(/is-hidden/);
       expect(document.querySelector('.is-selected-in .pika-button').firstChild.textContent).toBe("13");
@@ -80,10 +82,10 @@ describe("DatePicker", function() {
     });
 
     it("should be only one selected day", function() {
-      var node = document.getElementById('date-field'),
+      var field = document.getElementById('pika-date-field'),
           buttons;
       // To open the datepicker
-      fireEvent(node, 'focus');
+      fireEvent(field, 'focus');
 
       expect(document.querySelectorAll('.is-selected').length).toBe(1);
 
@@ -100,7 +102,7 @@ describe("DatePicker", function() {
     });
 
     it("should disabled dates properly", function() {
-      var node = document.getElementById('date-field');
+      var field = document.getElementById('pika-date-field');
       var invalids = ["14-06-2015", "15-06-2015"];
 
       var disabledDayHandler = function(day) {
@@ -111,13 +113,13 @@ describe("DatePicker", function() {
 
       datepicker.setCallback(disabledDayHandler, 'disableDayFn');
 
-      fireEvent(node, 'focus');
+      fireEvent(field, 'focus');
 
-      node.value = "2015-06-13";
-      fireEvent(node, 'change');
+      field.value = "2015-06-13";
+      fireEvent(field, 'change');
 
       datepicker.hide();
-      fireEvent(node, 'focus');
+      fireEvent(field, 'focus');
 
       expect(document.querySelectorAll('.pika-button')[13].parentNode.className).toMatch(/is-disabled/);
       expect(document.querySelectorAll('.pika-button')[14].parentNode.className).toMatch(/is-disabled/);
@@ -133,12 +135,12 @@ describe("DatePicker", function() {
       document.getElementById('end').value = nextMonth.getFullYear() + '-' + (nextMonth.getMonth() + 1)  + '-' + nextMonth.getDate();
 
       datepicker= new DatePicker({
-          fields: [document.getElementById('start'), document.getElementById('end')],
-          bounded: true,
-          firstDay: 1,
-          minDate: new Date('2000-01-01'),
-          maxDate: new Date('2020-12-31'),
-          yearRange: [2000, 2020]
+        dataFields: [document.getElementById('start'), document.getElementById('end')],
+        bounded: true,
+        firstDay: 1,
+        minDate: new Date('2000-01-01'),
+        maxDate: new Date('2020-12-31'),
+        yearRange: [2000, 2020]
       });
     });
 
@@ -156,29 +158,33 @@ describe("DatePicker", function() {
     it("should be rendered inside the common parent", function() {
       var calendar = document.querySelector('.pika-single.is-multiple');
       var start = document.getElementById('start');
+      var startField = document.getElementById('pika-start');
       var end = document.getElementById('end');
+      var endField = document.getElementById('pika-end');
 
       // To open the datepicker
-      fireEvent(start, 'focus');
+      fireEvent(startField, 'focus');
 
       expect(calendar.parentNode).toBe(document.getElementById('container-range'));
-      expect(calendar.offsetLeft).toBe(start.offsetLeft);
-      expect(calendar.offsetTop).toBe(start.offsetTop + start.offsetHeight);
+      expect(calendar.offsetLeft).toBe(startField.offsetLeft);
+      expect(calendar.offsetTop).toBe(startField.offsetTop + startField.offsetHeight);
 
-      fireEvent(end, 'focus');
-      expect(calendar.offsetLeft).toBe(end.offsetLeft);
-      expect(calendar.offsetTop).toBe(end.offsetTop + end.offsetHeight);
+      fireEvent(endField, 'focus');
+      expect(calendar.offsetLeft).toBe(endField.offsetLeft);
+      expect(calendar.offsetTop).toBe(endField.offsetTop + endField.offsetHeight);
 
     });
 
     it("should be open in current date if field is blank", function() {
       var node = document.getElementById('start'),
+          field = document.getElementById('pika-start'),
           months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
       expect(node.value).toEqual('');
+      expect(field.value).toEqual('');
 
       // To open the datepicker
-      fireEvent(node, 'focus');
+      fireEvent(field, 'focus');
 
       expect(document.querySelectorAll('.is-selected-in').length).toBe(0);
       expect(document.querySelectorAll('.is-selected-out').length).toBe(0); // none in the current month
@@ -190,79 +196,81 @@ describe("DatePicker", function() {
     });
 
     it("should be only two selected day and in between days", function() {
-      var start = document.getElementById('start'),
-          end = document.getElementById('end');
+      var startField = document.getElementById('pika-start');
+      var endField = document.getElementById('pika-end');
 
-      fireEvent(start, 'focus');
+      fireEvent(startField, 'focus');
       fireEvent(document.querySelector('.pika-next'), 'mousedown');
       fireEvent(document.querySelectorAll('.pika-button')[0], 'mousedown');
 
-      fireEvent(end, 'focus');
+      fireEvent(endField, 'focus');
       fireEvent(document.querySelectorAll('.pika-button')[6], 'mousedown');
       expect(document.querySelectorAll('.is-selected').length).toBe(2);
 
-      fireEvent(end, 'focus');
+      fireEvent(endField, 'focus');
       expect(document.querySelectorAll('.is-between').length).toBe(5);
     });
 
     it("should keep the dates interval if start is bigger than ending", function() {
-      var start = document.getElementById('start'),
-          end = document.getElementById('end');
+      var startField = document.getElementById('pika-start');
+      var endField = document.getElementById('pika-end');
 
-      fireEvent(end, 'focus');
+      fireEvent(endField, 'focus');
       fireEvent(document.querySelectorAll('.pika-button')[0], 'mousedown');
 
-      fireEvent(start, 'focus');
+      fireEvent(startField, 'focus');
       fireEvent(document.querySelector('.pika-next'), 'mousedown');
       fireEvent(document.querySelectorAll('.pika-button')[6], 'mousedown');
 
       // To force a repaint
-      fireEvent(end, 'focus');
+      fireEvent(endField, 'focus');
 
       expect(datepicker._e > datepicker._s).toBe(true);
       expect(document.querySelectorAll('.pika-button')[7].parentNode.className).toMatch(/is-selected/);
     });
 
     it("should not be able to select an ending date before the start date", function() {
-      var start = document.getElementById('start'),
-          end = document.getElementById('end');
+      var startField = document.getElementById('pika-start');
+      var endField = document.getElementById('pika-end');
 
-      fireEvent(start, 'focus');
+      fireEvent(startField, 'focus');
       fireEvent(document.querySelector('.pika-next'), 'mousedown');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
-      fireEvent(end, 'focus');
+      fireEvent(endField, 'focus');
       expect(document.querySelectorAll('.pika-button')[0].parentNode.className).toMatch(/is-disabled/);
       expect(document.querySelectorAll('.pika-button')[1].parentNode.className).toMatch(/is-disabled/);
     });
 
     it("should show the start date if ending date is not defined", function() {
-      var start = document.getElementById('start'),
-          end = document.getElementById('end'),
+      var startField = document.getElementById('pika-start'),
+          endField = document.getElementById('pika-end'),
           months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-      fireEvent(start, 'focus');
+      fireEvent(startField, 'focus');
       fireEvent(document.querySelector('.pika-next'), 'mousedown');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
-      fireEvent(end, 'focus');
+      fireEvent(endField, 'focus');
       expect(document.querySelectorAll('.pika-title .pika-label')[0].firstChild.textContent).toBe(months[nextMonth.getMonth()]);
     });
 
     it("should pass the focus to ending date when start date is set and ending date is blank", function() {
-      var start = document.getElementById('start'),
-          end = document.getElementById('end');
+      var start = document.getElementById('start');
+      var end = document.getElementById('end');
+      var startField = document.getElementById('pika-start');
+      var endField = document.getElementById('pika-end');
 
-      datepicker._f = end;
+      datepicker._f = endField;
       datepicker._w = "out";
       datepicker.setDate();
 
-      fireEvent(start, 'focus');
+      fireEvent(startField, 'focus');
       fireEvent(document.querySelector('.pika-next'), 'mousedown');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
       // Because we set the field when has focus
-      expect(datepicker._f).toEqual(end);
+      expect(datepicker._f).toEqual(endField);
     });
 
     it("should be return 0 days diff if any dates it's not defined yet", function() {
@@ -270,43 +278,45 @@ describe("DatePicker", function() {
     });
 
     it("should be return days diff properly when the two dates are defined", function() {
-      var start = document.getElementById('start'),
-          end = document.getElementById('end');
+      var startField = document.getElementById('pika-start');
+      var endField = document.getElementById('pika-end');
 
-      fireEvent(start, 'focus');
+      fireEvent(startField, 'focus');
       fireEvent(document.querySelector('.pika-next'), 'mousedown');
       fireEvent(document.querySelectorAll('.pika-button')[0], 'mousedown');
 
-      fireEvent(end, 'focus');
+      fireEvent(endField, 'focus');
       fireEvent(document.querySelectorAll('.pika-button')[6], 'mousedown');
 
       expect(datepicker.getDiff()).toBe(6);
 
-      fireEvent(start, 'focus');
+      fireEvent(startField, 'focus');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
       expect(datepicker.getDiff()).toBe(4);
 
-      fireEvent(start, 'focus');
+      fireEvent(startField, 'focus');
       fireEvent(document.querySelectorAll('.pika-button')[12], 'mousedown');
 
       // To force a repaint for testing visually
-      fireEvent(end, 'focus');
+      fireEvent(endField, 'focus');
 
       expect(datepicker.getDiff()).toBe(4);
     });
 
     it("should disabled dates properly", function() {
-      var start = document.getElementById('start'),
-          end = document.getElementById('end');
+      var start = document.getElementById('start');
+      var end = document.getElementById('end');
+      var startField = document.getElementById('pika-start');
+      var endField = document.getElementById('pika-end');
 
-      fireEvent(start, 'focus');
-      start.value = "2015-06-13";
-      fireEvent(start, 'change');
+      fireEvent(startField, 'focus');
+      startField.value = "2015-06-13";
+      fireEvent(startField, 'change');
 
-      fireEvent(end, 'focus');
-      end.value = "2015-06-20";
-      fireEvent(end, 'change');
+      fireEvent(endField, 'focus');
+      endField.value = "2015-06-20";
+      fireEvent(endField, 'change');
 
       var invalids_in = ["14-06-2015", "15-06-2015"];
       var invalids_out = ["18-06-2015", "19-06-2015"];
@@ -321,12 +331,12 @@ describe("DatePicker", function() {
 
       datepicker.hide();
 
-      fireEvent(start, 'focus');
+      fireEvent(startField, 'focus');
 
       expect(document.querySelectorAll('.pika-button')[13].parentNode.className).toMatch(/is-disabled/);
       expect(document.querySelectorAll('.pika-button')[14].parentNode.className).toMatch(/is-disabled/);
 
-      fireEvent(end, 'focus');
+      fireEvent(endField, 'focus');
 
       expect(document.querySelectorAll('.pika-button')[13].parentNode.className).not.toMatch(/is-disabled/);
       expect(document.querySelectorAll('.pika-button')[14].parentNode.className).not.toMatch(/is-disabled/);
@@ -344,12 +354,12 @@ describe("DatePicker", function() {
       document.getElementById('date-field').value = "11/05/2015"
 
       datepicker = new DatePicker({
-          fields: [document.getElementById('date-field')] ,
-          firstDay: 1,
-          parser: Dates,
-          minDate: new Date('2000-01-01'),
-          maxDate: new Date('2020-12-31'),
-          yearRange: [2000, 2020]
+        dataFields: [document.getElementById('date-field')] ,
+        firstDay: 1,
+        parser: Dates,
+        minDate: new Date('2000-01-01'),
+        maxDate: new Date('2020-12-31'),
+        yearRange: [2000, 2020]
       });
     });
 
@@ -359,58 +369,71 @@ describe("DatePicker", function() {
 
     it("format 'dd/MM/yyyy'", function() {
       var node = document.getElementById('date-field');
+      var field = document.getElementById('pika-date-field');
 
-      fireEvent(node, 'focus');
+      fireEvent(field, 'focus');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
-      expect(document.getElementById('date-field').value).toBe("03/05/2015");
+      // dataFormat: 'yyyy/MM/dd' by default
+      expect(node.value).toBe("2015/05/03");
+      expect(field.value).toBe("03/05/2015");
     });
 
     it("format 'dd-MM-yyyy'", function() {
       datepicker._o.format = 'dd-MM-yyyy';
-      var node = document.getElementById('date-field');
+      datepicker._o.dataFormat = 'yyyy-dd-MM';
 
-      fireEvent(node, 'focus');
+      var node = document.getElementById('date-field');
+      var field = document.getElementById('pika-date-field');
+
+      fireEvent(field, 'focus');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
-      expect(document.getElementById('date-field').value).toBe("03-05-2015");
+      expect(node.value).toBe("2015-03-05");
+      expect(field.value).toBe("03-05-2015");
     });
 
     it("format 'dd.MM.yy'", function() {
       datepicker._o.format = 'dd.MM.yy';
       var node = document.getElementById('date-field');
+      var field = document.getElementById('pika-date-field');
 
-      fireEvent(node, 'focus');
+      fireEvent(field, 'focus');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
-      expect(document.getElementById('date-field').value).toBe("03.05.15");
+      expect(node.value).toBe("2015/05/03");
+      expect(field.value).toBe("03.05.15");
     });
 
     it("format 'dd MMMM yyyy'", function() {
 
       var format = datepicker._o.format = 'dd MMMM yyyy';
       var node = document.getElementById('date-field');
+      var field = document.getElementById('pika-date-field');
 
-      node.value = Dates.format(Dates.parse(node.value, 'dd/MM/yyyy'), format);
+      field.value = Dates.format(Dates.parse(node.value, 'dd/MM/yyyy'), format);
 
-      fireEvent(node, 'focus');
+      fireEvent(field, 'focus');
       fireEvent(document.querySelector('.pika-next'), 'mousedown');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
-      expect(document.getElementById('date-field').value).toBe("03 June 2015");
+      expect(node.value).toBe("2015/06/03");
+      expect(field.value).toBe("03 June 2015");
     });
 
     it("format 'd MMM yyyy'", function() {
       var format = datepicker._o.format = 'd MMM yyyy';
       var node = document.getElementById('date-field');
+      var field = document.getElementById('pika-date-field');
 
-      node.value = Dates.format(Dates.parse(node.value, 'dd/MM/yyyy'), format);
+      field.value = Dates.format(Dates.parse(node.value, 'dd/MM/yyyy'), format);
 
-      fireEvent(node, 'focus');
+      fireEvent(field, 'focus');
       fireEvent(document.querySelector('.pika-next'), 'mousedown');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
-      expect(document.getElementById('date-field').value).toBe("3 Jun 2015");
+      expect(node.value).toBe("2015/06/03");
+      expect(field.value).toBe("3 Jun 2015");
     });
 
   });
