@@ -1,7 +1,7 @@
 /*!
  * DatePicker
  *
- * Copyright © 2015 Buti | BSD & MIT license | https://github.com/nobuti/datepicker
+ * Copyright © 2015 Buti | BSD & MIT license | https://github.com/BeMate/datepicker
  */
 
 (function(root, factory) {
@@ -640,6 +640,8 @@
         input.setAttribute('value', field.value);
         input.setAttribute('id', "pika-" + field.id);
         input.setAttribute('data-pika-field', field.id);
+        input.setAttribute('placeholder', field.getAttribute('placeholder'));
+        input.className = field.className;
 
         addClass(input, 'pika-trigger');
         addClass(input, 'pika-' + (index === 0 ? 'in' : 'out'));
