@@ -13,9 +13,31 @@ describe("DatePicker", function() {
     }
   }
 
+  function factory(format, dataFormat) {
+    var options = {
+      dataFields: [document.getElementById('date-field')] ,
+      firstDay: 1,
+      parser: Dates,
+      minDate: new Date('2000-01-01'),
+      maxDate: new Date('2020-12-31'),
+      yearRange: [2000, 2020]
+    }
+
+    if (format != null) {
+      options.format = format;
+    }
+
+    if (dataFormat != null) {
+      options.dataFormat = dataFormat;
+    }
+
+    return new DatePicker(options);
+  }
+
   var today = new Date(),
-        nextMonth = new Date(),
-        currentDay = today.getDate();
+      nextMonth = new Date(),
+      currentDay = today.getDate(),
+      datepicker;
 
   nextMonth.setMonth(nextMonth.getMonth() + 1);
 
@@ -28,8 +50,6 @@ describe("DatePicker", function() {
   });
 
   describe('Single datepicker', function () {
-
-    var datepicker;
 
     beforeEach(function() {
       datepicker = new DatePicker({
@@ -127,8 +147,6 @@ describe("DatePicker", function() {
   });
 
   describe('Range datepicker', function () {
-
-    var datepicker;
 
     beforeEach(function() {
       document.getElementById('start').value = "";
@@ -347,27 +365,14 @@ describe("DatePicker", function() {
 
   describe('Datepicker with parser', function () {
 
-    var datepicker;
-
-    beforeEach(function() {
-
-      document.getElementById('date-field').value = "11/05/2015"
-
-      datepicker = new DatePicker({
-        dataFields: [document.getElementById('date-field')] ,
-        firstDay: 1,
-        parser: Dates,
-        minDate: new Date('2000-01-01'),
-        maxDate: new Date('2020-12-31'),
-        yearRange: [2000, 2020]
-      });
-    });
-
     afterEach(function() {
       datepicker.destroy();
     });
 
     it("format 'dd/MM/yyyy'", function() {
+      document.getElementById('date-field').value = "2015/05/11"; // default format
+      datepicker = factory();
+
       var node = document.getElementById('date-field');
       var field = document.getElementById('pika-date-field');
 
@@ -380,8 +385,8 @@ describe("DatePicker", function() {
     });
 
     it("format 'dd-MM-yyyy'", function() {
-      datepicker._o.format = 'dd-MM-yyyy';
-      datepicker._o.dataFormat = 'yyyy-dd-MM';
+      document.getElementById('date-field').value = "2015-05-11";
+      datepicker = factory('dd-MM-yyyy', 'yyyy-dd-MM');
 
       var node = document.getElementById('date-field');
       var field = document.getElementById('pika-date-field');
@@ -389,52 +394,102 @@ describe("DatePicker", function() {
       fireEvent(field, 'focus');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
-      expect(node.value).toBe("2015-03-05");
-      expect(field.value).toBe("03-05-2015");
+      expect(node.value).toBe("2015-03-11"); // yyyy-dd-MM
+      expect(field.value).toBe("03-11-2015"); // dd-MM-yyyy
     });
 
     it("format 'dd.MM.yy'", function() {
-      datepicker._o.format = 'dd.MM.yy';
+      document.getElementById('date-field').value = "2015/05/11";
+      datepicker = factory('dd.MM.yy');
+
       var node = document.getElementById('date-field');
       var field = document.getElementById('pika-date-field');
 
       fireEvent(field, 'focus');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
-      expect(node.value).toBe("2015/05/03");
-      expect(field.value).toBe("03.05.15");
+      expect(node.value).toBe("2015/05/03"); // yyyy/MM/dd
+      expect(field.value).toBe("03.05.15"); // dd.MM.yy
     });
 
     it("format 'dd MMMM yyyy'", function() {
+      document.getElementById('date-field').value = "2015/05/11";
+      datepicker = factory('dd MMMM yyyy');
 
-      var format = datepicker._o.format = 'dd MMMM yyyy';
+      var format = 'dd MMMM yyyy';
       var node = document.getElementById('date-field');
       var field = document.getElementById('pika-date-field');
-
-      field.value = Dates.format(Dates.parse(node.value, 'dd/MM/yyyy'), format);
 
       fireEvent(field, 'focus');
       fireEvent(document.querySelector('.pika-next'), 'mousedown');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
-      expect(node.value).toBe("2015/06/03");
-      expect(field.value).toBe("03 June 2015");
+      expect(node.value).toBe("2015/06/03"); // yyyy/MM/dd
+      expect(field.value).toBe("03 June 2015"); // dd MMMM yyyy
     });
 
     it("format 'd MMM yyyy'", function() {
+      document.getElementById('date-field').value = "2015/05/11";
+      datepicker = factory('d MMM yyyy');
+
       var format = datepicker._o.format = 'd MMM yyyy';
       var node = document.getElementById('date-field');
       var field = document.getElementById('pika-date-field');
 
-      field.value = Dates.format(Dates.parse(node.value, 'dd/MM/yyyy'), format);
-
       fireEvent(field, 'focus');
       fireEvent(document.querySelector('.pika-next'), 'mousedown');
       fireEvent(document.querySelectorAll('.pika-button')[2], 'mousedown');
 
-      expect(node.value).toBe("2015/06/03");
-      expect(field.value).toBe("3 Jun 2015");
+      expect(node.value).toBe("2015/06/03"); // yyyy/MM/dd
+      expect(field.value).toBe("3 Jun 2015"); // d MMM yyyy
     });
 
+  });
+
+  describe('Datepicker initial value with parser', function () {
+
+    afterEach(function() {
+      datepicker.destroy();
+    });
+
+    it("format dd.MM.yyyy", function() {
+      document.getElementById('date-field').value = "2015-12-23";
+      datepicker = factory('dd.MM.yyyy', 'yyyy-MM-dd');
+
+      var node = document.getElementById('date-field');
+      var field = document.getElementById('pika-date-field');
+
+      expect(field.value).toBe("23.12.2015");
+    });
+
+    it("format MM.dd.yyyy", function() {
+      document.getElementById('date-field').value = "2015-12-23";
+      datepicker = factory('MM.dd.yyyy', 'yyyy-MM-dd');
+
+      var node = document.getElementById('date-field');
+      var field = document.getElementById('pika-date-field');
+
+      expect(field.value).toBe("12.23.2015");
+    });
+
+    it("format d MMM yyyy", function() {
+      document.getElementById('date-field').value = "2015-12-23";
+      datepicker = factory('d MMM yyyy', 'yyyy-MM-dd');
+
+      var node = document.getElementById('date-field');
+      var field = document.getElementById('pika-date-field');
+
+      expect(field.value).toBe("23 Dec 2015");
+    });
+
+    it("format d MMMM yyyy", function() {
+      document.getElementById('date-field').value = "2015-12-03";
+      datepicker = factory('d MMMM yyyy', 'yyyy-MM-dd');
+
+      var node = document.getElementById('date-field');
+      var field = document.getElementById('pika-date-field');
+
+      expect(field.value).toBe("3 December 2015");
+    });
   });
 });

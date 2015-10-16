@@ -629,10 +629,13 @@
     },
 
     createFields: function(opts, fields) {
+      var hasParser = (opts.parser != null);
 
       opts.fields = [];
 
       forEach(fields, function(field, index){
+        var date;
+
         // We clone the field
         var input = field.cloneNode();
 
@@ -640,6 +643,11 @@
         input.setAttribute('data-pika-field', field.id);
         input.setAttribute('readonly', true);
         input.removeAttribute('name');
+
+        if (hasParser && field.value) {
+          date = opts.parser.parse(field.value, opts.dataFormat);
+          input.value = opts.parser.format(date, opts.format);
+        }
 
         field.setAttribute('type', 'hidden');
 
