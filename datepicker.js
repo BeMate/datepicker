@@ -633,15 +633,15 @@
       opts.fields = [];
 
       forEach(fields, function(field, index){
-        field.setAttribute('type', 'hidden');
+        // We clone the field
+        var input = field.cloneNode();
 
-        var input = document.createElement("input");
-        input.setAttribute('type', 'text');
-        input.setAttribute('value', field.value);
         input.setAttribute('id', "pika-" + field.id);
         input.setAttribute('data-pika-field', field.id);
-        input.setAttribute('placeholder', field.getAttribute('placeholder'));
-        input.className = field.className;
+        input.setAttribute('readonly', true);
+        input.removeAttribute('name');
+
+        field.setAttribute('type', 'hidden');
 
         addClass(input, 'pika-trigger');
         addClass(input, 'pika-' + (index === 0 ? 'in' : 'out'));
