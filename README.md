@@ -36,7 +36,7 @@ See the examples folder for a full version.
 <script src="datepicker.js"></script>
 <script>
     var picker = new DatePicker({
-        fields: [document.getElementById('datepicker')],
+        dataFields: [document.getElementById('datepicker')],
         parser: Dates,
         format: 'D MMMM YYYY',
         onSelect: function() {
