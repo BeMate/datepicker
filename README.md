@@ -21,7 +21,7 @@ Add the JavaScript to the end of your document:
 ```html
 <script src="datepicker.js"></script>
 <script>
-    var picker = new DatePicker({ fields: [document.getElementById('datepicker')] });
+    var picker = new DatePicker({ dataFields: [document.getElementById('datepicker')] });
 </script>
 ```
 
@@ -51,7 +51,7 @@ See the examples folder for a full version.
 As the examples demonstrate above
 DatePicker has many useful options:
 
-* `fields` bind the datepicker to a form field or two
+* `dataFields` bind the datepicker to a form field or two
 * `position` preferred position of the datepicker relative to the form field, e.g.: `top right`, `bottom right` **Note:** automatic adjustment may occur to avoid datepicker from being displayed outside the viewport, see the positions example (default to 'bottom left')
 * `reposition` can be set to false to not reposition datepicker within the viewport, forcing it to take the configured `position` (default: true)
 * `parser` to manage an output format for `.toString()` and `field` value
@@ -77,7 +77,7 @@ DatePicker has many useful options:
 You can control the date picker after creation:
 
 ```javascript
-var picker = new DatePicker({ fields: [document.getElementById('datepicker')] });
+var picker = new DatePicker({ dataFields: [document.getElementById('datepicker')] });
 ```
 
 ### Get and set date
